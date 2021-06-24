@@ -100,8 +100,8 @@ final class WPZOOM_Preload_Featured_Images {
 	public function add_settings_page() {
 
 		add_options_page(
-			'Preload Featured Image by WPZOOM',
-			'Preload Featured Image',
+			'Preload Featured Images by WPZOOM',
+			'Preload Featured Images',
 			'manage_options',
 			'preload-featured-images',
 			array( $this, 'create_settings_page' )
@@ -127,7 +127,6 @@ final class WPZOOM_Preload_Featured_Images {
 			</ul>', esc_html__( 'Preload Featured Image', 'preload-featured-images' ), esc_html__( 'Support Forum on WordPress.org', 'preload-featured-images' )
 		);
 
-		settings_errors();
 		printf( '<form method="post" action="options.php">' );
 		settings_fields( 'preload_featured_images_option_group' );
 		do_settings_sections( 'preload-featured-images' );
@@ -191,7 +190,7 @@ final class WPZOOM_Preload_Featured_Images {
 	 */
 	private function check_theme() {
 
-		$default_size = 'full';
+		$default_size = '';
 		$wpzoom_themes = array(
 			'foodica',
 			'foodica-pro',
@@ -264,10 +263,15 @@ final class WPZOOM_Preload_Featured_Images {
 		if ( ! is_singular( 'post' ) ) {
 			return;
 		}
+
 		$pfi_options = get_option( 'preload_featured_images_option_name' );
 	
 		/** Adjust image size based on post type or other factor. */
 		$image_size = isset( $pfi_options['image_size'] ) ? $pfi_options['image_size'] : self::$featured_images_size;
+
+		if( empty( $image_size ) ) {
+			return;
+		}
 		
 		$image_size = apply_filters( 'preload_featured_images_size', $image_size, $post );
 		
