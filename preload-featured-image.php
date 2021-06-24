@@ -197,6 +197,13 @@ final class WPZOOM_Preload_Featured_Images {
 			'wpzoom-cookely',
 			'wpzoom-gourmand'
 		);
+		$other_themes = array(
+			'astra'         => '',
+			'divi'          => 'et-pb-post-main-image-fullwidth',
+			'neve'          => 'neve-blog',
+			'generatepress' => 'full',
+			'oceanwp'       => 'full'
+		);
 
 		$current_theme = get_template();
 
@@ -239,6 +246,8 @@ final class WPZOOM_Preload_Featured_Images {
 		$image_sizes = get_intermediate_image_sizes();
 
 		$html_field = '<select name="preload_featured_images_option_name[image_size]" id="wpzoom_preload_featured_images_size">';
+		$html_field .= '<option value="">' . esc_html__( 'Select the size', 'preload-featured-images' ) . '</option>';
+		$html_field .= '<option ' . selected( 'full', self::$featured_images_size, false ) . ' value="full">' . esc_html__( 'Full', 'preload-featured-images' ) . '</option>';
 		foreach( $image_sizes as $size ) { 
 			$html_field .=	'<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . $size . '">' . ucfirst( str_replace( '-', ' ', $size ) ) . '</option>';
 		}

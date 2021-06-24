@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Preload Featured Image by WPZOOM 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/instagram-widget-by-"
 "wpzoom\n"
-"POT-Creation-Date: 2021-06-24 15:39+0300\n"
+"POT-Creation-Date: 2021-06-24 16:25+0300\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -36,15 +36,23 @@ msgstr ""
 msgid "Support Forum on WordPress.org"
 msgstr ""
 
-#: preload-featured-image.php:155
+#: preload-featured-image.php:154
 msgid "Preload Featured Images Settings"
 msgstr ""
 
-#: preload-featured-image.php:161
+#: preload-featured-image.php:160
 msgid "Featured Images Size"
 msgstr ""
 
-#: preload-featured-image.php:247
+#: preload-featured-image.php:249
+msgid "Select the size"
+msgstr ""
+
+#: preload-featured-image.php:250
+msgid "Full"
+msgstr ""
+
+#: preload-featured-image.php:255
 msgid ""
 "Please, select the correct image size for the featured image on the single post"
 msgstr ""
