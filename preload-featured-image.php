@@ -1,16 +1,16 @@
 <?php
 /**
- * Plugin Name: Preload Featured Image by WPZOOM
- * Plugin URI:  https://wordpress.org/plugins/preload-featured-image
- * Description: Prelod featured image on single post to get faster page loading experience.
+ * Plugin Name: Preload Featured Images
+ * Plugin URI:  https://wordpress.org/plugins/preload-featured-images
+ * Description: Preload featured images in single post to get faster page loading experience.
  * Version:     1.0.0
  * Author:      WPZOOM
- * Author URI:  http://wpzoom.com/
- * Text Domain: preload-featured-image
+ * Author URI:  https://wpzoom.com/
+ * Text Domain: preload-featured-images
  * License:     GNU General Public License v3
  * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  *
- * @package WPZOOM_Preload_Featured_Image
+ * @package WPZOOM_Preload_Featured_Images
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,14 +18,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * The main PHP class for Preload Featured Image.
+ * The main PHP class for Preload Featured Images.
  */
-final class WPZOOM_Preload_Featured_Image {
+final class WPZOOM_Preload_Featured_Images {
 
 	/**
 	 * This plugin's instance.
 	 *
-	 * @var WPZOOM_Preload_Featured_Image
+	 * @var WPZOOM_Preload_Featured_Images
 	 * @since 1.0.0
 	 */
 	private static $instance;
@@ -35,7 +35,7 @@ final class WPZOOM_Preload_Featured_Image {
 	 *
 	 * @var string
 	 */
-	private static $featured_image_size;
+	private static $featured_images_size;
 
 	/**
 	 * Theme name
@@ -45,18 +45,18 @@ final class WPZOOM_Preload_Featured_Image {
 	private static $theme;
 
 	/**
-	 * Main WPZOOM_Preload_Featured_Image Instance.
+	 * Main WPZOOM_Preload_Featured_Images Instance.
 	 *
-	 * Insures that only one instance of WPZOOM_Preload_Featured_Image exists in memory at any one
+	 * Insures that only one instance of WPZOOM_Preload_Featured_Images exists in memory at any one
 	 * time. Also prevents needing to define globals all over the place.
 	 *
 	 * @since 1.0.0
 	 * @static
-	 * @return object|WPZOOM_Preload_Featured_Image The one true WPZOOM_Preload_Featured_Image
+	 * @return object|WPZOOM_Preload_Featured_Images The one true WPZOOM_Preload_Featured_Images
 	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
-			self::$instance = new WPZOOM_Preload_Featured_Image();
+			self::$instance = new WPZOOM_Preload_Featured_Images();
 		}
 		return self::$instance;
 	}
@@ -74,7 +74,7 @@ final class WPZOOM_Preload_Featured_Image {
 		add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
 		add_action( 'admin_init', array( $this, 'option_panel_init' ) );
 
-		add_action( 'wp_head', array( $this, 'preload_featured_image' ), 5 );
+		add_action( 'wp_head', array( $this, 'preload_featured_images' ), 5 );
 	
 	}
 
@@ -89,7 +89,7 @@ final class WPZOOM_Preload_Featured_Image {
 	 * @access public
 	 */
 	public function i18n() {
-		load_plugin_textdomain( 'preload-featured-image', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		load_plugin_textdomain( 'preload-featured-images', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -103,7 +103,7 @@ final class WPZOOM_Preload_Featured_Image {
 			'Preload Featured Image by WPZOOM',
 			'Preload Featured Image',
 			'manage_options',
-			'preload-featured-image',
+			'preload-featured-images',
 			array( $this, 'create_settings_page' )
 		);
 
@@ -117,20 +117,20 @@ final class WPZOOM_Preload_Featured_Image {
 	public function create_settings_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ){
-			wp_die( __( 'You do not have enough permission to view this page', 'preload-featured-image' ) );
+			wp_die( __( 'You do not have enough permission to view this page', 'preload-featured-images' ) );
 		}
 
 		printf('<div class="wrap">
 			<h2>%s</h2>
 			<ul>
-				<li><a href="https://wordpress.org/support/plugin/preload-featured-image" target="_blank" >%s</a></li>
-			</ul>', esc_html__( 'Preload Featured Image', 'preload-featured-image' ), esc_html__( 'Support Forum on WordPress.org', 'preload-featured-image' )
+				<li><a href="https://wordpress.org/support/plugin/preload-featured-images" target="_blank" >%s</a></li>
+			</ul>', esc_html__( 'Preload Featured Image', 'preload-featured-images' ), esc_html__( 'Support Forum on WordPress.org', 'preload-featured-images' )
 		);
 
 		settings_errors();
 		printf( '<form method="post" action="options.php">' );
-		settings_fields( 'preload_featured_image_option_group' );
-		do_settings_sections( 'preload-featured-image' );
+		settings_fields( 'preload_featured_images_option_group' );
+		do_settings_sections( 'preload-featured-images' );
 		submit_button();
 		printf( '</form></div>' );
 
@@ -146,21 +146,21 @@ final class WPZOOM_Preload_Featured_Image {
 		$this->check_theme();
 
 		register_setting(
-				'preload_featured_image_option_group',
-				'preload_featured_image_option_name',
+				'preload_featured_images_option_group',
+				'preload_featured_images_option_name',
 				array( $this, 'sanitize_field' )
 		);
 		add_settings_section(
-			'preload_featured_image_setting_section',
-			esc_html__( 'Preload Featured Image Settings', 'preload-featured-image' ),
+			'preload_featured_images_setting_section',
+			esc_html__( 'Preload Featured Images Settings', 'preload-featured-images' ),
 			array( $this, 'section_info' ),
-			'preload-featured-image'
+			'preload-featured-images'
 		);
 		add_settings_field(
 				'image_size',
-				esc_html__( 'Featured Image Size', 'preload-featured-image'), array( $this, 'select_field_image_sizes' ),
-				'preload-featured-image',
-				'preload_featured_image_setting_section'
+				esc_html__( 'Featured Images Size', 'preload-featured-images'), array( $this, 'select_field_image_sizes' ),
+				'preload-featured-images',
+				'preload_featured_images_setting_section'
 		);
 	}
 
@@ -174,7 +174,7 @@ final class WPZOOM_Preload_Featured_Image {
 	}
 
 	public function reset_option_values( $old_name, $old_theme ) {
-		update_option( 'preload_featured_image_option_name', null );
+		update_option( 'preload_featured_images_option_name', null );
 	}
 
 	/**
@@ -215,13 +215,13 @@ final class WPZOOM_Preload_Featured_Image {
 			}
 		}
 
-		$pfi_options = get_option( 'preload_featured_image_option_name' );
+		$pfi_options = get_option( 'preload_featured_images_option_name' );
 		if( !isset( $pfi_options['image_size'] ) ) {
-			update_option( 'preload_featured_image_option_name', array( 'image_size' => $default_size ) );
-			self::$featured_image_size = $default_size;
+			update_option( 'preload_featured_images_option_name', array( 'image_size' => $default_size ) );
+			self::$featured_images_size = $default_size;
 		}
 		else {
-			self::$featured_image_size = $pfi_options['image_size'];
+			self::$featured_images_size = $pfi_options['image_size'];
 		}
 		
 
@@ -239,12 +239,12 @@ final class WPZOOM_Preload_Featured_Image {
 		global $_wp_additional_image_sizes;
 		$image_sizes = get_intermediate_image_sizes();
 
-		$html_field = '<select name="preload_featured_image_option_name[image_size]" id="wpzoom_preload_featured_image_size">';
+		$html_field = '<select name="preload_featured_images_option_name[image_size]" id="wpzoom_preload_featured_images_size">';
 		foreach( $image_sizes as $size ) { 
-			$html_field .=	'<option ' . selected( $size, self::$featured_image_size, false ) . ' value="' . $size . '">' . ucfirst( str_replace( '-', ' ', $size ) ) . '</option>';
+			$html_field .=	'<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . $size . '">' . ucfirst( str_replace( '-', ' ', $size ) ) . '</option>';
 		}
 		$html_field .=	'</select>';
-		$html_field .=	'<p class="description">'. wp_kses_post( __( 'Please, select the correct image size for the featured image on the single post', 'preload-featured-image' ) ) . '</p>';
+		$html_field .=	'<p class="description">'. wp_kses_post( __( 'Please, select the correct image size for the featured image on the single post', 'preload-featured-images' ) ) . '</p>';
 
 		echo $html_field;
 
@@ -256,7 +256,7 @@ final class WPZOOM_Preload_Featured_Image {
 	 *
 	 * @since 1.0.0
 	 */
-	public function preload_featured_image() {
+	public function preload_featured_images() {
 
 		global $post;
 		
@@ -264,15 +264,15 @@ final class WPZOOM_Preload_Featured_Image {
 		if ( ! is_singular( 'post' ) ) {
 			return;
 		}
-		$pfi_options = get_option( 'preload_featured_image_option_name' );
+		$pfi_options = get_option( 'preload_featured_images_option_name' );
 	
 		/** Adjust image size based on post type or other factor. */
-		$image_size = isset( $pfi_options['image_size'] ) ? $pfi_options['image_size'] : self::$featured_image_size;
+		$image_size = isset( $pfi_options['image_size'] ) ? $pfi_options['image_size'] : self::$featured_images_size;
 		
-		$image_size = apply_filters( 'preload_featured_image_size', $image_size, $post );
+		$image_size = apply_filters( 'preload_featured_images_size', $image_size, $post );
 		
 		/** Get post thumbnail if an attachment ID isn't specified. */
-		$thumbnail_id = apply_filters( 'preload_featured_image_id', get_post_thumbnail_id( $post->ID ), $post );
+		$thumbnail_id = apply_filters( 'preload_featured_images_id', get_post_thumbnail_id( $post->ID ), $post );
 
 		/** Get the image */
 		$image = wp_get_attachment_image_src( $thumbnail_id, $image_size );
@@ -320,4 +320,4 @@ final class WPZOOM_Preload_Featured_Image {
 
 }
 
-add_action( 'init', 'WPZOOM_Preload_Featured_Image::instance' );
+add_action( 'init', 'WPZOOM_Preload_Featured_Images::instance' );

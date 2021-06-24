@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Preload Featured Image by WPZOOM 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/instagram-widget-by-"
 "wpzoom\n"
-"POT-Creation-Date: 2021-06-24 15:15+0300\n"
+"POT-Creation-Date: 2021-06-24 15:39+0300\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -37,11 +37,11 @@ msgid "Support Forum on WordPress.org"
 msgstr ""
 
 #: preload-featured-image.php:155
-msgid "Preload Featured Image Settings"
+msgid "Preload Featured Images Settings"
 msgstr ""
 
 #: preload-featured-image.php:161
-msgid "Featured Image Size"
+msgid "Featured Images Size"
 msgstr ""
 
 #: preload-featured-image.php:247
