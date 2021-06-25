@@ -198,12 +198,14 @@ final class WPZOOM_Preload_Featured_Images {
 			'wpzoom-gourmand'
 		);
 		$other_themes = array(
-			'astra'         => '',
+			'ashe'          => 'ashe-full-thumbnail',
+			'astra'         => 'large',
 			'divi'          => 'et-pb-post-main-image-fullwidth',
 			'neve'          => 'neve-blog',
 			'generatepress' => 'full',
 			'oceanwp'       => 'full'
 		);
+		$other_themes = apply_filters( 'preload_featured_images_themes_sizes', $other_themes );
 
 		$current_theme = get_template();
 
@@ -217,6 +219,13 @@ final class WPZOOM_Preload_Featured_Images {
 				}
 				else {
 					$default_size = 'foodica-loop-sticky';
+				}
+			}
+		}
+		else {
+			foreach( $other_themes as $key => $value ) {
+				if( $key === $current_theme ) {
+					$default_size = $value;
 				}
 			}
 		}
@@ -244,12 +253,11 @@ final class WPZOOM_Preload_Featured_Images {
 	
 		global $_wp_additional_image_sizes;
 		$image_sizes = get_intermediate_image_sizes();
+		$image_sizes[] = 'full';
 
 		$html_field = '<select name="preload_featured_images_option_name[image_size]" id="wpzoom_preload_featured_images_size">';
-		$html_field .= '<option value="">' . esc_html__( 'Select the size', 'preload-featured-images' ) . '</option>';
-		$html_field .= '<option ' . selected( 'full', self::$featured_images_size, false ) . ' value="full">' . esc_html__( 'Full', 'preload-featured-images' ) . '</option>';
 		foreach( $image_sizes as $size ) { 
-			$html_field .=	'<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . $size . '">' . ucfirst( str_replace( '-', ' ', $size ) ) . '</option>';
+			$html_field .=	'<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . $size . '">' . $size . '</option>';
 		}
 		$html_field .=	'</select>';
 		$html_field .=	'<p class="description">'. wp_kses_post( __( 'Please, select the correct image size for the featured image on the single post', 'preload-featured-images' ) ) . '</p>';
