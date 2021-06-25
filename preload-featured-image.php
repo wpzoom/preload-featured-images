@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Preload Featured Images
- * Plugin URI:  https://wordpress.org/plugins/preload-featured-images
- * Description: Preload featured images in single post to get faster page loading experience.
+ * Plugin URI:  https://wordpress.org/plugins/preload-featured-images/
+ * Description: Preload featured images in single post to get higher PageSpeed Score.
  * Version:     1.0.0
  * Author:      WPZOOM
  * Author URI:  https://wpzoom.com/
@@ -260,7 +260,7 @@ final class WPZOOM_Preload_Featured_Images {
 			$html_field .=	'<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . $size . '">' . $size . '</option>';
 		}
 		$html_field .=	'</select>';
-		$html_field .=	'<p class="description">'. wp_kses_post( __( 'Please, select the correct image size for the featured image on the single post', 'preload-featured-images' ) ) . '</p>';
+		$html_field .=	'<p class="description">'. wp_kses_post( __( 'Select the correct image size for the Featured Image on the single post', 'preload-featured-images' ) ) . '</p>';
 
 		echo $html_field;
 
