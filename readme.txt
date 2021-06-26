@@ -1,13 +1,13 @@
 === Preload Featured Images ===
-Contributors: WPZOOM
+Contributors: WPZOOM, alexus450
 Donate link: http://paypal.me/wpzm/10usd
 Tags: pagespeed, preload, featured images, image preload, prefetch
 Requires at least: 5.0
 Requires PHP: 5.6
 Tested up to: 5.7
-Stable tag: trunk
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Stable tag: 1.0.0
+License: GPLv3 or later
+License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
 Preload Featured Images automatically in posts to increase the PageSpeed Score.
 

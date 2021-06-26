@@ -255,14 +255,11 @@ final class WPZOOM_Preload_Featured_Images {
 		$image_sizes = get_intermediate_image_sizes();
 		$image_sizes[] = 'full';
 
-		$html_field = '<select name="preload_featured_images_option_name[image_size]" id="wpzoom_preload_featured_images_size">';
+		echo '<select name="preload_featured_images_option_name[image_size]" id="wpzoom_preload_featured_images_size">';
 		foreach( $image_sizes as $size ) { 
-			$html_field .=	'<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . $size . '">' . $size . '</option>';
+			echo '<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . esc_attr( $size ) . '">' . esc_html( $size ) . '</option>';
 		}
-		$html_field .=	'</select>';
-		$html_field .=	'<p class="description">'. wp_kses_post( __( 'Select the correct image size for the Featured Image on the single post', 'preload-featured-images' ) ) . '</p>';
-
-		echo $html_field;
+		echo '</select><p class="description">'. wp_kses_post( __( 'Select the correct image size for the Featured Image on the single post', 'preload-featured-images' ) ) . '</p>';
 
 	}
 
