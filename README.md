@@ -28,4 +28,4 @@ There are various ways you can contribute:
 
 1. Raise an [Issue](https://github.com/wpzoom/preload-featured-images/issues) on GitHub
 2. Send us a Pull Request with your bug fixes and/or new features
-3. Translate Instagram Widget into [different languages](https://translate.wordpress.org/projects/wp-plugins/preload-featured-images/)
+3. Translate plugin into [different languages](https://translate.wordpress.org/projects/wp-plugins/preload-featured-images/)
