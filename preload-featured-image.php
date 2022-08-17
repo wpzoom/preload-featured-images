@@ -38,6 +38,13 @@ final class WPZOOM_Preload_Featured_Images {
 	private static $featured_images_size;
 
 	/**
+	 * Featured image size for mobile
+	 *
+	 * @var string
+	 */
+	private static $featured_mobile_images_size;
+
+	/**
 	 * Theme name
 	 *
 	 * @var string
@@ -249,6 +256,16 @@ final class WPZOOM_Preload_Featured_Images {
 	 */
 	public function select_field_image_sizes() {
 
+		$pfi_options = get_option( 'preload_featured_images_option_name' );
+		if( empty( $pfi_options['mobile_image_size'] ) ) {
+			self::$featured_mobile_images_size = self::$featured_images_size;
+		}
+		else {
+			self::$featured_mobile_images_size = $pfi_options['mobile_image_size'];
+		}
+
+		//print_r( self::$featured_mobile_images_size );
+
 		$html_field = '';
 	
 		global $_wp_additional_image_sizes;
@@ -260,6 +277,13 @@ final class WPZOOM_Preload_Featured_Images {
 			echo '<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . esc_attr( $size ) . '">' . esc_html( $size ) . '</option>';
 		}
 		echo '</select><p class="description">'. wp_kses_post( __( 'Select the correct image size for the Featured Image on the single post', 'preload-featured-images' ) ) . '</p>';
+
+		echo '</br>';
+		echo '<select name="preload_featured_images_option_name[mobile_image_size]" id="wpzoom_preload_featured_mobile_images_size">';
+		foreach( $image_sizes as $size ) { 
+			echo '<option ' . selected( $size, self::$featured_mobile_images_size, false ) . ' value="' . esc_attr( $size ) . '">' . esc_html( $size ) . '</option>';
+		}
+		echo '</select><p class="description">'. wp_kses_post( __( 'Select the correct image size for the Featured Image on the single post (Mobile Devices)', 'preload-featured-images' ) ) . '</p>';
 
 	}
 
@@ -281,7 +305,11 @@ final class WPZOOM_Preload_Featured_Images {
 		$pfi_options = get_option( 'preload_featured_images_option_name' );
 	
 		/** Adjust image size based on post type or other factor. */
-		$image_size = isset( $pfi_options['image_size'] ) ? $pfi_options['image_size'] : self::$featured_images_size;
+		$image_size        = isset( $pfi_options['image_size'] ) ? $pfi_options['image_size'] : self::$featured_images_size;
+
+		if( wp_is_mobile() ) {
+			$image_size = isset( $pfi_options['mobile_image_size'] ) ? $pfi_options['mobile_image_size'] : self::$featured_images_size;
+		}
 
 		if( empty( $image_size ) ) {
 			return;
