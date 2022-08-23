@@ -131,7 +131,7 @@ final class WPZOOM_Preload_Featured_Images {
 			<h2>%s</h2>
 			<ul>
 				<li><a href="https://wordpress.org/support/plugin/preload-featured-images" target="_blank" >%s</a></li>
-			</ul>', esc_html__( 'Preload Featured Image', 'preload-featured-images' ), esc_html__( 'Support Forum on WordPress.org', 'preload-featured-images' )
+			</ul>', esc_html__( 'Preload Featured Images', 'preload-featured-images' ), esc_html__( 'Support Forum on WordPress.org', 'preload-featured-images' )
 		);
 
 		printf( '<form method="post" action="options.php">' );
@@ -164,7 +164,7 @@ final class WPZOOM_Preload_Featured_Images {
 		);
 		add_settings_field(
 				'image_size',
-				esc_html__( 'Featured Images Size', 'preload-featured-images'), array( $this, 'select_field_image_sizes' ),
+				esc_html__( 'Featured Image Size', 'preload-featured-images'), array( $this, 'select_field_image_sizes' ),
 				'preload-featured-images',
 				'preload_featured_images_setting_section'
 		);
@@ -276,14 +276,14 @@ final class WPZOOM_Preload_Featured_Images {
 		foreach( $image_sizes as $size ) { 
 			echo '<option ' . selected( $size, self::$featured_images_size, false ) . ' value="' . esc_attr( $size ) . '">' . esc_html( $size ) . '</option>';
 		}
-		echo '</select><p class="description">'. wp_kses_post( __( 'Select the correct image size for the Featured Image on the single post', 'preload-featured-images' ) ) . '</p>';
+		echo '</select><p class="description">'. wp_kses_post( __( 'Select the image size for the Featured Image on single post pages <strong>(Desktop)</strong>', 'preload-featured-images' ) ) . '</p>';
 
 		echo '</br>';
 		echo '<select name="preload_featured_images_option_name[mobile_image_size]" id="wpzoom_preload_featured_mobile_images_size">';
 		foreach( $image_sizes as $size ) { 
 			echo '<option ' . selected( $size, self::$featured_mobile_images_size, false ) . ' value="' . esc_attr( $size ) . '">' . esc_html( $size ) . '</option>';
 		}
-		echo '</select><p class="description">'. wp_kses_post( __( 'Select the correct image size for the Featured Image on the single post (Mobile Devices)', 'preload-featured-images' ) ) . '</p>';
+		echo '</select><p class="description">'. wp_kses_post( __( 'Select the image size for the Featured Image on single post pages <strong>(Mobile)</strong>', 'preload-featured-images' ) ) . '</p>';
 
 	}
 
