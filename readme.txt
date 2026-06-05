@@ -1,5 +1,5 @@
 === Preload Featured Images ===
-Contributors: WPZOOM, alexus450
+Contributors: WPZOOM
 Donate link: http://paypal.me/wpzm/10usd
 Tags: pagespeed, preload, featured images, image preload, prefetch
 Requires at least: 5.0
