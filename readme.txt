@@ -1,11 +1,11 @@
 === Preload Featured Images ===
 Contributors: WPZOOM
 Donate link: http://paypal.me/wpzm/10usd
-Tags: pagespeed, preload, featured images, image preload, prefetch
-Requires at least: 5.0
-Requires PHP: 5.6
-Tested up to: 6.1
-Stable tag: 1.0.0
+Tags: pagespeed, preload, lcp, featured images, performance
+Requires at least: 6.3
+Requires PHP: 7.4
+Tested up to: 7.0
+Stable tag: 1.1.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
@@ -67,6 +67,10 @@ You can fix this problem by installing this plugin.
 
 Yes, this plugin supports Image CDNs like Jetpack and other providers, so you can be sure that the right images will be preloaded.
 
+= Can I preload a different image size on mobile and desktop? =
+
+Yes. On the settings page you can choose separate image sizes for desktop and mobile. The plugin outputs responsive preload tags using `media` queries (instead of detecting the device on the server), so it works correctly even when your site is behind a page cache.
+
 
 == Screenshots ==
 
@@ -74,6 +78,14 @@ Yes, this plugin supports Image CDNs like Jetpack and other providers, so you ca
 
 == Changelog ==
 
+= 1.1.0 =
+* Fixed: the preload link now includes `fetchpriority="high"`. Without it the LCP image was preloaded at Low priority and the in-flight preload "won" the request, so the image downloaded at Low priority despite the rendered <img> having fetchpriority=high — failing PageSpeed's "LCP request discovery" audit.
+* Fixed: separate mobile/desktop image sizes now use cache-safe responsive `media` preloads instead of `wp_is_mobile()`, which was unreliable behind any page cache.
+* Fixed: mobile visitors no longer miss the preload when only a desktop image size is configured.
+* Fixed: front-end preloading no longer depends on the admin having initialized the theme defaults.
+* Improved: settings input is now validated against your site's registered image sizes.
+* Improved: cleaner, escaped preload markup output.
+* Tested up to WordPress 7.0.
 
 = 1.0 =
 * Initial release

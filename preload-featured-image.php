@@ -3,7 +3,7 @@
  * Plugin Name: Preload Featured Images
  * Plugin URI:  https://wordpress.org/plugins/preload-featured-images/
  * Description: Preload featured images in single post to get higher PageSpeed Score.
- * Version:     1.0.0
+ * Version:     1.1.0
  * Author:      WPZOOM
  * Author URI:  https://wpzoom.com/
  * Text Domain: preload-featured-images
@@ -176,7 +176,31 @@ final class WPZOOM_Preload_Featured_Images {
 	 * @since 1.0.0
 	 */
 	public function sanitize_field( $values ) {
-		return $values;
+
+		$sanitized   = array();
+		$valid_sizes = $this->get_available_image_sizes();
+
+		if ( isset( $values['image_size'] ) && in_array( $values['image_size'], $valid_sizes, true ) ) {
+			$sanitized['image_size'] = $values['image_size'];
+		}
+
+		if ( isset( $values['mobile_image_size'] ) && in_array( $values['mobile_image_size'], $valid_sizes, true ) ) {
+			$sanitized['mobile_image_size'] = $values['mobile_image_size'];
+		}
+
+		return $sanitized;
+	}
+
+	/**
+	 * Get the list of selectable image sizes (registered sizes plus "full").
+	 *
+	 * @since 1.1.0
+	 * @return string[]
+	 */
+	private function get_available_image_sizes() {
+		$image_sizes   = get_intermediate_image_sizes();
+		$image_sizes[] = 'full';
+		return $image_sizes;
 	}
 
 	public function reset_option_values( $old_name, $old_theme ) {
@@ -197,7 +221,31 @@ final class WPZOOM_Preload_Featured_Images {
 	 */
 	private function check_theme() {
 
-		$default_size = '';
+		$default_size = $this->get_default_image_size();
+
+		$pfi_options = get_option( 'preload_featured_images_option_name' );
+		if( !isset( $pfi_options['image_size'] ) ) {
+			update_option( 'preload_featured_images_option_name', array( 'image_size' => $default_size ) );
+			self::$featured_images_size = $default_size;
+		}
+		else {
+			self::$featured_images_size = $pfi_options['image_size'];
+		}
+
+	}
+
+	/**
+	 * Resolve the default featured image size for the current theme.
+	 *
+	 * Pure helper with no database writes, so it can run on the front end
+	 * (where `admin_init` never fires) as well as on the settings page.
+	 *
+	 * @since 1.1.0
+	 * @return string Registered image size name, or '' if the theme is unknown.
+	 */
+	private function get_default_image_size() {
+
+		$default_size  = '';
 		$wpzoom_themes = array(
 			'foodica',
 			'foodica-pro',
@@ -216,37 +264,19 @@ final class WPZOOM_Preload_Featured_Images {
 
 		$current_theme = get_template();
 
-		if( in_array( $current_theme, $wpzoom_themes ) ) {
-			if( 'wpzoom-cookely' == $current_theme || 'wpzoom-gourmand' == $current_theme ) {
+		if( in_array( $current_theme, $wpzoom_themes, true ) ) {
+			if( 'wpzoom-cookely' === $current_theme || 'wpzoom-gourmand' === $current_theme ) {
 				$default_size = 'single-normal';
 			}
-			elseif( 'foodica' == $current_theme || 'foodica-pro' == $current_theme ) {
-				if( class_exists( 'WPZOOM' ) ) {
-					$default_size = 'loop-large';
-				}
-				else {
-					$default_size = 'foodica-loop-sticky';
-				}
+			elseif( 'foodica' === $current_theme || 'foodica-pro' === $current_theme ) {
+				$default_size = class_exists( 'WPZOOM' ) ? 'loop-large' : 'foodica-loop-sticky';
 			}
 		}
-		else {
-			foreach( $other_themes as $key => $value ) {
-				if( $key === $current_theme ) {
-					$default_size = $value;
-				}
-			}
+		elseif( isset( $other_themes[ $current_theme ] ) ) {
+			$default_size = $other_themes[ $current_theme ];
 		}
 
-		$pfi_options = get_option( 'preload_featured_images_option_name' );
-		if( !isset( $pfi_options['image_size'] ) ) {
-			update_option( 'preload_featured_images_option_name', array( 'image_size' => $default_size ) );
-			self::$featured_images_size = $default_size;
-		}
-		else {
-			self::$featured_images_size = $pfi_options['image_size'];
-		}
-		
-
+		return $default_size;
 	}
 
 	/**
@@ -266,11 +296,7 @@ final class WPZOOM_Preload_Featured_Images {
 
 		//print_r( self::$featured_mobile_images_size );
 
-		$html_field = '';
-	
-		global $_wp_additional_image_sizes;
-		$image_sizes = get_intermediate_image_sizes();
-		$image_sizes[] = 'full';
+		$image_sizes = $this->get_available_image_sizes();
 
 		echo '<select name="preload_featured_images_option_name[image_size]" id="wpzoom_preload_featured_images_size">';
 		foreach( $image_sizes as $size ) { 
@@ -296,72 +322,107 @@ final class WPZOOM_Preload_Featured_Images {
 	public function preload_featured_images() {
 
 		global $post;
-		
+
 		/** Prevent preloading for specific content types or post types */
 		if ( ! is_singular( 'post' ) ) {
 			return;
 		}
 
-		$pfi_options = get_option( 'preload_featured_images_option_name' );
-	
-		/** Adjust image size based on post type or other factor. */
-		$image_size        = isset( $pfi_options['image_size'] ) ? $pfi_options['image_size'] : self::$featured_images_size;
-
-		if( wp_is_mobile() ) {
-			$image_size = isset( $pfi_options['mobile_image_size'] ) ? $pfi_options['mobile_image_size'] : self::$featured_images_size;
-		}
-
-		if( empty( $image_size ) ) {
-			return;
-		}
-		
-		$image_size = apply_filters( 'preload_featured_images_size', $image_size, $post );
-		
 		/** Get post thumbnail if an attachment ID isn't specified. */
 		$thumbnail_id = apply_filters( 'preload_featured_images_id', get_post_thumbnail_id( $post->ID ), $post );
 
-		/** Get the image */
-		$image = wp_get_attachment_image_src( $thumbnail_id, $image_size );
-		$src = '';
-		$additional_attr_array = array();
-		$additional_attr = '';
-
-		if ( $image ) {
-			list( $src, $width, $height ) = $image;
-
-			/**
-			 * The following code which generates the srcset is plucked straight
-			 * out of wp_get_attachment_image() for consistency as it's important
-			 * that the output matches otherwise the preloading could become ineffective.
-			 */
-			$image_meta = wp_get_attachment_metadata( $thumbnail_id );
-
-			if ( is_array( $image_meta ) ) {
-				$size_array = array( absint( $width ), absint( $height ) );
-				$srcset     = wp_calculate_image_srcset( $size_array, $src, $image_meta, $thumbnail_id );
-				$sizes      = wp_calculate_image_sizes( $size_array, $src, $image_meta, $thumbnail_id );
-
-				if ( $srcset && ( $sizes || ! empty( $attr['sizes'] ) ) ) {
-					$additional_attr_array['imagesrcset'] = $srcset;
-
-					if ( empty( $attr['sizes'] ) ) {
-						$additional_attr_array['imagesizes'] = $sizes;
-					}
-				}
-			}
-
-			foreach ( $additional_attr_array as $name => $value ) {
-				$additional_attr .= "$name=" . '"' . $value . '" ';
-			}
-
-		} else {
-			/** Early exit if no image is found. */
+		if ( ! $thumbnail_id ) {
 			return;
 		}
 
-		/** Output the link HTML tag */
-		printf( '<link rel="preload" as="image" href="%s" %s />', esc_url( $src ), $additional_attr );
+		$pfi_options  = get_option( 'preload_featured_images_option_name' );
+		$default_size = $this->get_default_image_size();
 
+		/** Resolve sizes independently of the admin (admin_init never fires on the front end). */
+		$desktop_size = ! empty( $pfi_options['image_size'] ) ? $pfi_options['image_size'] : $default_size;
+		$mobile_size  = ! empty( $pfi_options['mobile_image_size'] ) ? $pfi_options['mobile_image_size'] : $desktop_size;
+
+		$desktop_size = apply_filters( 'preload_featured_images_size', $desktop_size, $post );
+		$mobile_size  = apply_filters( 'preload_featured_images_mobile_size', $mobile_size, $post );
+
+		if ( empty( $desktop_size ) && empty( $mobile_size ) ) {
+			return;
+		}
+
+		/**
+		 * Emit cache-safe responsive preloads using `media` attributes instead of
+		 * sniffing the User-Agent with wp_is_mobile(), which is unreliable behind
+		 * any page cache: the first visitor's device would decide what is cached
+		 * for everyone. The browser evaluates the media query itself, so the same
+		 * cached HTML works correctly for every device.
+		 */
+		if ( $desktop_size === $mobile_size ) {
+			$this->print_preload_link( $thumbnail_id, $desktop_size );
+		}
+		else {
+			$breakpoint = (int) apply_filters( 'preload_featured_images_mobile_breakpoint', 600 );
+			$this->print_preload_link( $thumbnail_id, $mobile_size, sprintf( '(max-width: %dpx)', $breakpoint ) );
+			$this->print_preload_link( $thumbnail_id, $desktop_size, sprintf( '(min-width: %dpx)', $breakpoint + 1 ) );
+		}
+
+	}
+
+	/**
+	 * Print a single `<link rel="preload" as="image">` tag for the featured image.
+	 *
+	 * The srcset/sizes generation mirrors wp_get_attachment_image() so the
+	 * preloaded resource matches the one the browser ultimately renders,
+	 * avoiding a wasteful double download.
+	 *
+	 * `fetchpriority="high"` is REQUIRED on the link: a preloaded image without
+	 * it is fetched at Low priority, and because the preload is discovered first
+	 * (in the head) it wins the request — so the LCP image would download at Low
+	 * priority even though the rendered <img> carries fetchpriority="high".
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param int    $thumbnail_id Attachment ID of the featured image.
+	 * @param string $image_size   Registered image size to preload.
+	 * @param string $media        Optional media query to scope the preload to a breakpoint.
+	 */
+	private function print_preload_link( $thumbnail_id, $image_size, $media = '' ) {
+
+		if ( empty( $image_size ) ) {
+			return;
+		}
+
+		$image = wp_get_attachment_image_src( $thumbnail_id, $image_size );
+
+		if ( ! $image ) {
+			return;
+		}
+
+		list( $src, $width, $height ) = $image;
+
+		$attributes = array();
+		$image_meta = wp_get_attachment_metadata( $thumbnail_id );
+
+		if ( is_array( $image_meta ) ) {
+			$size_array = array( absint( $width ), absint( $height ) );
+			$srcset     = wp_calculate_image_srcset( $size_array, $src, $image_meta, $thumbnail_id );
+			$sizes      = wp_calculate_image_sizes( $size_array, $src, $image_meta, $thumbnail_id );
+
+			if ( $srcset && $sizes ) {
+				$attributes['imagesrcset'] = $srcset;
+				$attributes['imagesizes']  = $sizes;
+			}
+		}
+
+		if ( ! empty( $media ) ) {
+			$attributes['media'] = $media;
+		}
+
+		$attr_html = '';
+		foreach ( $attributes as $name => $value ) {
+			$attr_html .= sprintf( ' %s="%s"', esc_attr( $name ), esc_attr( $value ) );
+		}
+
+		printf( '<link rel="preload" as="image" fetchpriority="high" href="%s"%s />' . "\n", esc_url( $src ), $attr_html );
 	}
 
 }
